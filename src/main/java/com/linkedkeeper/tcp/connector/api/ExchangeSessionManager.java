@@ -43,6 +43,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by frank@linkedkeeper.com on 17/1/10.
+ * 这里的 sessionListeners 只有 logSessionListener（在xml配置里直接依赖注入进来的）,
  */
 public abstract class ExchangeSessionManager implements SessionManager {
 

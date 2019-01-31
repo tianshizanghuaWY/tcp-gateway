@@ -36,7 +36,6 @@ import com.linkedkeeper.tcp.exception.PushException;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelPromise;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,6 +56,7 @@ public class TcpConnection<T> extends ExchangeConnection<T> {
         this.close = true;
 
         cxt.close();
+
         logger.debug("the connection have been destroyed! ctx -> " + cxt.toString());
     }
 

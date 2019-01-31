@@ -65,9 +65,11 @@ public class TcpConnector extends ExchangeTcpConnector {
         try {
             Session session = tcpSessionManager.createSession(wrapper.getSessionId(), ctx);
             session.addSessionListener(tcpHeartbeatListener);
+
             session.connect();
 
-            tcpSessionManager.addSession(session);
+            //tcpSessionManager.addSession(session);//移到 tcpSessionManager.createSessio 中
+
             /** send **/
             session.getConnection().send(wrapper.getBody());
         } catch (Exception e) {

@@ -73,9 +73,11 @@ public class TcpServerHandler extends ChannelInboundHandlerAdapter {
                 // inbound
                 if (message.getFormat() == SEND) {
                     MessageWrapper wrapper = proxy.invoke(sMsg, message);
-                    if (wrapper != null)
+                    if (wrapper != null){
                         this.receive(ctx, wrapper);
+                    }
                 }
+
                 // outbound
                 if (message.getFormat() == REPLY) {
                     notify.reply(message);
@@ -122,6 +124,7 @@ public class TcpServerHandler extends ChannelInboundHandlerAdapter {
         }
     }
 
+    //channel 和 session 一一对应，需要在channel里保存session的信息。
     private String getChannelSessionHook(ChannelHandlerContext ctx) {
         return ctx.channel().attr(Constants.SERVER_SESSION_HOOK).get();
     }
@@ -158,11 +161,13 @@ public class TcpServerHandler extends ChannelInboundHandlerAdapter {
     private void isConnect0(ChannelHandlerContext ctx, MessageWrapper wrapper) {
         String sessionId = wrapper.getSessionId();
         String sessionId0 = getChannelSessionHook(ctx);
+        logger.info("message - sesssionId:{}, channel - sessionId:{}", sessionId, sessionId0);
         if (sessionId.equals(sessionId0)) {
             logger.info("tcpConnector reconnect sessionId -> " + sessionId + ", ctx -> " + ctx.toString());
             tcpConnector.responseSendMessage(wrapper);
         } else {
             logger.info("tcpConnector connect sessionId -> " + sessionId + ", sessionId0 -> " + sessionId0 + ", ctx -> " + ctx.toString());
+
             tcpConnector.connect(ctx, wrapper);
             setChannelSessionHook(ctx, sessionId);
             logger.info("create channel attr sessionId " + sessionId + " successful, ctx -> " + ctx.toString());

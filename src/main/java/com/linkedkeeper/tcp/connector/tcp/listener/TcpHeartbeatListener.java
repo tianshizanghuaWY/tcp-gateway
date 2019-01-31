@@ -50,9 +50,13 @@ public class TcpHeartbeatListener implements Runnable, SessionListener {
     private ReentrantLock lock = new ReentrantLock();
     private Condition notEmpty = lock.newCondition();
 
-    private int checkPeriod = 30 * 1000;
+    private int checkPeriod = 10 * 1000;//30 * 1000;
     private volatile boolean stop = false;
 
+    /**
+     * 项目启动后，实例化 TcpConnector 后在 init() 里启动该心跳检测任务.
+     * @param tcpSessionManager
+     */
     public TcpHeartbeatListener(TcpSessionManager tcpSessionManager) {
         this.tcpSessionManager = tcpSessionManager;
     }

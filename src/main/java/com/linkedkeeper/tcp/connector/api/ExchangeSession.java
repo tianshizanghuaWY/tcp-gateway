@@ -52,6 +52,7 @@ public class ExchangeSession extends SessionValid {
      */
     private String sessionId = null;
 
+    //CopyOnWriteArrayList 线程安全的，add元素时加锁并拷贝新的list，添加完后将引用指向新的list
     private transient List<SessionListener> listeners = new CopyOnWriteArrayList<SessionListener>();
 
     private transient Connection connection = null;
@@ -116,8 +117,7 @@ public class ExchangeSession extends SessionValid {
             return;
         }
         synchronized (this) {
-            // Check again, now we are inside the sync so this code only runs
-            // once
+            // Check again, now we are inside the sync so this code only runs once
             // Double check locking - closing and isValid need to be volatile
             if (closing || !isValid) {
                 logger.debug("the session " + sessionId + " is closing or isValid = false!");

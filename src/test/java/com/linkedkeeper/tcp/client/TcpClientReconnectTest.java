@@ -44,8 +44,11 @@ import io.netty.handler.codec.protobuf.ProtobufDecoder;
 import io.netty.handler.codec.protobuf.ProtobufEncoder;
 import io.netty.handler.codec.protobuf.ProtobufVarint32FrameDecoder;
 import io.netty.handler.codec.protobuf.ProtobufVarint32LengthFieldPrepender;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class TcpClient {
+public class TcpClientReconnectTest {
+    private final static Logger logger = LoggerFactory.getLogger(TcpClientReconnectTest.class);
 
     public static String host = "127.0.0.1";
     public static int port = 2000;
@@ -54,7 +57,7 @@ public class TcpClient {
 //    public static int port = 80;
 
     public static Bootstrap bootstrap = getBootstrap();
-    public static Channel channel = getChannel(host, port);
+    public static Channel channel = getChannel();
 
     /**
      * Init Bootstrap
@@ -81,7 +84,8 @@ public class TcpClient {
         return b;
     }
 
-    public static final Channel getChannel(String host, int port) {
+    public static final Channel getChannel() {
+        logger.info("do connect...........");
         Channel channel;
         try {
             channel = bootstrap.connect(host, port).sync().channel();
@@ -93,20 +97,30 @@ public class TcpClient {
     }
 
     public static void sendMsg(Object msg) throws Exception {
+
+        if(!channel.isActive()){
+            logger.info("channel:{} inactive...", channel.toString());
+            return;
+        }
+
         if (channel != null) {
             channel.writeAndFlush(msg).sync();
         }
     }
 
-
+    /**
+     * 30 s 重发一次消息，触发重连， 服务端超时为 3 秒，每 10秒重新检测
+     * @param args
+     * @throws Exception
+     */
     public static void main(String[] args) throws Exception {
         try {
-            TcpClient.sendMsg(Protocol.generateConnect());
-            /*
             for (; ; ) {
-                Thread.sleep(3000);
-                TcpClient.sendMsg(Protocol.generateHeartbeat());
-            }*/
+                TcpClientReconnectTest.sendMsg(Protocol.generateConnect());
+
+                Thread.sleep(30 * 1000);
+                //TcpClient.sendMsg(Protocol.generateHeartbeat());
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

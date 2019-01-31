@@ -32,6 +32,8 @@ package com.linkedkeeper.tcp.connector;
 
 /**
  * Created by frank@linkedkeeper.com on 17/1/10.
+ *
+ * 一个连接和Session是一一对应，功能：连接，关闭，发送消息
  */
 public interface Connection<T> {
 

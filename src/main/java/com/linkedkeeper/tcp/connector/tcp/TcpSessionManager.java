@@ -72,11 +72,21 @@ public class TcpSessionManager extends ExchangeTcpSessionManager {
         for (SessionListener listener : sessionListeners) {
             session.addSessionListener(listener);
         }
+
         logger.debug("add listeners to session " + sessionId + " successful! " + sessionListeners);
+
+        //纳入到 sessionManager 管理
+        addSession(session);
 
         return session;
     }
 
+    /**
+     * Connection 和 Session 是一一对应的, connectionId == sessionId
+     * @param session
+     * @param ctx
+     * @return
+     */
     protected Connection createTcpConnection(Session session, ChannelHandlerContext ctx) {
         Connection conn = new TcpConnection(ctx);
         conn.setConnectionId(session.getSessionId());

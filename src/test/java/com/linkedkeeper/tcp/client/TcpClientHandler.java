@@ -33,8 +33,11 @@ package com.linkedkeeper.tcp.client;
 import com.linkedkeeper.tcp.connector.tcp.codec.MessageBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.channel.EventLoop;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.TimeUnit;
 
 //public class TcpClientHandler extends ChannelHandlerAdapter {
 public class TcpClientHandler extends ChannelInboundHandlerAdapter {
@@ -46,5 +49,27 @@ public class TcpClientHandler extends ChannelInboundHandlerAdapter {
 
         logger.info("Client Received Msg :" + message);
         System.out.println("Client Received Msg :" + message);
+    }
+
+    @Override
+    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        super.channelInactive(ctx);
+        logger.info("channel:{} inactive... need reconnect!", ctx.channel());
+
+        final EventLoop eventLoop = ctx.channel().eventLoop();
+        eventLoop.schedule(new Runnable() {
+            @Override
+            public void run() {
+                TcpClientReconnectTest.channel = TcpClientReconnectTest.getChannel();
+            }
+        }, 1L, TimeUnit.SECONDS);
+
+    }
+
+    @Override
+    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+        super.channelActive(ctx);
+
+        logger.info("channel:{} active....", ctx.channel());
     }
 }

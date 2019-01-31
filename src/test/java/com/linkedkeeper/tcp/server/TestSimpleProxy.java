@@ -64,6 +64,7 @@ public class TestSimpleProxy implements ApiProxy {
                 e.printStackTrace();
             }
         }
+
         return null;
     }
 }
